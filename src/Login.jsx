@@ -23,7 +23,6 @@ function Login() {
     const navigate = useNavigate();
     const { login, user } = useContext(AuthContext);
 
-  
     const handleBackToHome = () => navigate('/');
 
     // Função para redirecionar com base no tipo de usuário e ID
@@ -67,7 +66,8 @@ function Login() {
         try {
             console.log(`Tentando login para usuário: ${username}`);
             const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            const response = await axios.post(`${API_URL}/api/login`, { username, password });  
+            console.log('API_URL sendo usada:', API_URL);
+            const response = await axios.post(`${API_URL}/api/login`, { username, password });
             console.log('Resposta do servidor:', response.data);
             
             const { token, userId, tipo_usuario } = response.data;

@@ -96,28 +96,37 @@ const StrokeRiskMonitor = () => {
         }
     };
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
     // Função para salvar os dados no backend
     const saveStrokeRiskToDB = async (asymmetry, risk) => {
         if (!patientId) return;
 
         const token = localStorage.getItem('token');
         if (!token) {
-            setError("Token não encontrado. Faça login novamente.");
-            setIsDetecting(false);
+            setError('Usuário não autenticado. Faça login novamente.');
+            navigate('/login');
             return;
         }
 
         try {
-            const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            await axios.post('http://localhost:5000/api/stroke-risk', {
-                patient_id: patientId,
-                asymmetry_index: asymmetry,
-                risk_level: risk,
-                observations: 'Detecção automática via monitor'
-            }, config);
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            await axios.post(
+                `${API_BASE_URL}/stroke-risk`,
+                {
+                    patient_id: patientId,
+                    asymmetry_index: asymmetry,
+                    risk_level: risk,
+                    observations: 'Detecção automática via monitor',
+                },
+                config
+            );
         } catch (err) {
-            console.error("Erro ao salvar risco de AVC:", err);
-            setError("Falha ao comunicar com o servidor para salvar os dados.");
+            logError('Erro ao salvar risco de AVC:', err);
+            setError(err.response?.data?.message || 'Falha ao comunicar com o servidor para salvar os dados.');
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                navigate('/login');
+            }
         }
     };
 

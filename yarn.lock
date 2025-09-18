@@ -278,7 +278,7 @@
   resolved "https://registry.npmjs.org/@kurkle/color/-/color-0.3.4.tgz"
   integrity sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==
 
-"@mediapipe/pose@~0.5.0":
+"@mediapipe/pose@^0.5.1675469404", "@mediapipe/pose@~0.5.0":
   version "0.5.1675469404"
   resolved "https://registry.npmjs.org/@mediapipe/pose/-/pose-0.5.1675469404.tgz"
   integrity sha512-DFZsNWTsSphRIZppnUCuunzBiHP2FdJXR9ehc7mMi4KG+oPaOH0Em3d6kr7Py+TSyTXC1doH88KcF28k2sBxsQ==
@@ -441,7 +441,7 @@
   dependencies:
     "@tensorflow/tfjs-backend-cpu" "4.22.0"
 
-"@tensorflow/tfjs-converter@^4.10.0":
+"@tensorflow/tfjs-converter@^4.10.0", "@tensorflow/tfjs-converter@^4.22.0":
   version "4.22.0"
   resolved "https://registry.npmjs.org/@tensorflow/tfjs-converter/-/tfjs-converter-4.22.0.tgz"
   integrity sha512-PT43MGlnzIo+YfbsjM79Lxk9lOq6uUwZuCc8rrp0hfpLjF6Jv8jS84u2jFb+WpUeuF4K33ZDNx8CjiYrGQ2trQ==

@@ -60,22 +60,24 @@ const SecretaryDashboard = () => {
     Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json',
   });
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
   const fetchWithToken = useCallback(async (url, setData, errorMsg) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('Token ausente.');
-      const response = await fetch(url, { headers: getAuthHeaders() });
-      if (response.status === 401) throw new Error('Sessão expirada.');
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({ error: `Falha na requisição para ${url}` }));
-        throw new Error(errData.error || errorMsg);
+      try {
+          const token = localStorage.getItem('token');
+          if (!token) throw new Error('Token ausente.');
+          const response = await fetch(`${API_URL}${url}`, { headers: getAuthHeaders() });
+          if (response.status === 401) throw new Error('Sessão expirada.');
+          if (!response.ok) {
+              const errData = await response.json().catch(() => ({ error: `Falha na requisição para ${url}` }));
+              throw new Error(errData.error || errorMsg);
+          }
+          const data = await response.json();
+          setData(data);
+      } catch (err) {
+          console.error(`Error fetching ${url}:`, err.message);
+          setError(err.message);
       }
-      const data = await response.json();
-      setData(data);
-    } catch (err) {
-      console.error(`Error fetching ${url}:`, err.message);
-      setError(err.message);
-    }
   }, []);
 
   const fetchAllData = useCallback(async () => {

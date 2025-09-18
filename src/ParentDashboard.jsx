@@ -117,7 +117,6 @@ function ParentDashboard() {
                 return;
             }
 
-            // Garante que user.userId existe antes de usar
             if (!user.userId) {
                 setLoading(false);
                 return;
@@ -129,13 +128,12 @@ function ParentDashboard() {
                 return;
             }
 
-            // Declare o token uma única vez aqui para este useEffect
             const token = localStorage.getItem('token');
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-            // Função para buscar o patientId associado ao pai logado
             const fetchPatientId = async () => {
                 try {
-                    const response = await fetch(`/api/parent/dashboard/${user.userId}/patient-id`, {
+                    const response = await fetch(`${API_URL}/api/parent/dashboard/${user.userId}/patient-id`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -160,9 +158,8 @@ function ParentDashboard() {
             const currentPatientId = await fetchPatientId();
 
             if (currentPatientId) {
-                // Busca histórico de consultas
                 try {
-                    const response = await fetch(`/api/parent/dashboard/${user.userId}/consultations`, {
+                    const response = await fetch(`${API_URL}/api/parent/dashboard/${user.userId}/consultations`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -176,9 +173,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar histórico de consultas: " + err.message);
                 }
 
-                // Busca profissionais associados ao paciente
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/associated-professionals`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/associated-professionals`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -192,9 +188,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar profissionais associados: " + err.message);
                 }
 
-                // Busca consultas pendentes/confirmadas do paciente
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/appointments`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/appointments`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -208,11 +203,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar consultas do paciente: " + err.message);
                 }
 
-                // --- Novas chamadas para a Visão Geral ---
-
-                // Próximas Consultas Agendadas
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/upcoming-appointments`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/upcoming-appointments`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -226,9 +218,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar próximas consultas: " + err.message);
                 }
 
-                // Resumo do Progresso Recente do Paciente
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/progress-summary`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/progress-summary`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -242,9 +233,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar resumo de progresso: " + err.message);
                 }
 
-                // Alertas e Notificações Importantes
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/alerts`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/alerts`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -258,10 +248,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar alertas: " + err.message);
                 }
 
-                // Tarefas e Recomendações Recentes dos Profissionais
-                // ATENÇÃO: A tabela patient_recommendations não foi encontrada. Se esta rota for usada, ela falhará.
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/recommendations`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/recommendations`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -275,9 +263,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar recomendações: " + err.message);
                 }
 
-                // Atividade Recente (Log de Ações)
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/recent-activity`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/recent-activity`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -291,11 +278,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar atividades recentes: " + err.message);
                 }
 
-                // --- Novas chamadas para Comunicação ---
-
-                // Buscar profissionais para comunicação
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/communication-professionals`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/communication-professionals`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -309,9 +293,8 @@ function ParentDashboard() {
                     setError("Erro ao carregar profissionais para comunicação: " + err.message);
                 }
 
-                // Buscar contagem de mensagens não lidas
                 try {
-                    const response = await fetch(`/api/parent/patient/${currentPatientId}/unread-messages-count`, {
+                    const response = await fetch(`${API_URL}/api/parent/patient/${currentPatientId}/unread-messages-count`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -325,22 +308,36 @@ function ParentDashboard() {
                     setError("Erro ao carregar contagem de mensagens não lidas: " + err.message);
                 }
 
-            } // Fim do if (currentPatientId)
+                try {
+                    const response = await fetch(`${API_URL}/api/services`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Erro ao buscar serviços: ${errorData.error || response.statusText}`);
+                    }
+                    const data = await response.json();
+                    setServices(data);
+                } catch (err) {
+                    console.error("Erro ao buscar serviços:", err);
+                    setError("Erro ao carregar serviços: " + err.message);
+                }
+            }
 
             setLoading(false);
         };
 
         validateUserAndFetchData();
-
-    }, [user, navigate, dashboardId]); // Dependências
+    }, [user, navigate, dashboardId]);
 
     // Efeito para buscar disponibilidade do profissional quando um é selecionado
     useEffect(() => {
         const fetchProfessionalAvailability = async () => {
             if (selectedProfessional) {
-                const token = localStorage.getItem('token'); // Declare o token aqui
+                const token = localStorage.getItem('token');
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
                 try {
-                    const response = await fetch(`/api/professional/${selectedProfessional}/availability`, {
+                    const response = await fetch(`${API_URL}/api/professional/${selectedProfessional}/availability`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!response.ok) {
@@ -354,22 +351,26 @@ function ParentDashboard() {
                     setError("Erro ao carregar disponibilidade: " + err.message);
                 }
             } else {
-                setProfessionalAvailability([]); // Limpa a disponibilidade se nenhum profissional for selecionado
+                setProfessionalAvailability([]);
             }
         };
 
         fetchProfessionalAvailability();
-    }, [selectedProfessional]); // Depende do profissional selecionado
+    }, [selectedProfessional]);
 
     // Função para buscar mensagens de um profissional específico
     const fetchMessages = async (professionalId) => {
-        if (!patientIdForAppointments) return;
+        if (!patientIdForAppointments) {
+            setError("Paciente não encontrado para comunicação.");
+            return;
+        }
 
         setLoadingMessages(true);
         const token = localStorage.getItem('token');
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         
         try {
-            const response = await fetch(`/api/parent/patient/${patientIdForAppointments}/messages/${professionalId}`, {
+            const response = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/messages/${professionalId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) {
@@ -380,16 +381,21 @@ function ParentDashboard() {
             setMessages(data);
 
             // Marcar mensagens como lidas
-            await fetch(`/api/parent/patient/${patientIdForAppointments}/messages/${professionalId}/mark-read`, {
+            const markReadResponse = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/messages/${professionalId}/mark-read`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            if (!markReadResponse.ok) {
+                console.warn("Erro ao marcar mensagens como lidas:", markReadResponse.statusText);
+            }
 
             // Atualizar contagem de não lidas
-            const unreadResponse = await fetch(`/api/parent/patient/${patientIdForAppointments}/unread-messages-count`, {
+            const unreadResponse = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/unread-messages-count`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            if (unreadResponse.ok) {
+            if (!unreadResponse.ok) {
+                console.warn("Erro ao buscar contagem de mensagens não lidas:", unreadResponse.statusText);
+            } else {
                 const unreadData = await unreadResponse.json();
                 setUnreadCounts(unreadData);
             }
@@ -406,14 +412,16 @@ function ParentDashboard() {
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() || !selectedCommunicationProfessional || !patientIdForAppointments) {
+            setError("Campos obrigatórios não preenchidos ou paciente não encontrado.");
             return;
         }
 
         setSendingMessage(true);
         const token = localStorage.getItem('token');
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
         try {
-            const response = await fetch(`/api/parent/patient/${patientIdForAppointments}/send-message`, {
+            const response = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/send-message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -431,13 +439,11 @@ function ParentDashboard() {
             }
 
             const result = await response.json();
-            
-            // Adicionar a nova mensagem à lista
             setMessages(prev => [...prev, result.data]);
             setNewMessage('');
 
             // Atualizar contagem de não lidas
-            const unreadResponse = await fetch(`/api/parent/patient/${patientIdForAppointments}/unread-messages-count`, {
+            const unreadResponse = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/unread-messages-count`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (unreadResponse.ok) {
@@ -447,7 +453,7 @@ function ParentDashboard() {
 
         } catch (err) {
             console.error("Erro ao enviar mensagem:", err);
-            alert("Erro ao enviar mensagem: " + err.message);
+            setError("Erro ao enviar mensagem: " + err.message);
         } finally {
             setSendingMessage(false);
         }
@@ -488,13 +494,14 @@ function ParentDashboard() {
     const handleRequestAppointment = async (e) => {
         e.preventDefault();
         if (!patientIdForAppointments || !selectedProfessional || !selectedDate || !selectedTime) {
-            alert('Por favor, preencha todos os campos obrigatórios para agendar a consulta.');
+            setError('Por favor, preencha todos os campos obrigatórios para agendar a consulta.');
             return;
         }
 
         try {
-            const token = localStorage.getItem('token'); // Declare o token aqui
-            const response = await fetch(`/api/parent/patient/${patientIdForAppointments}/request-appointment`, {
+            const token = localStorage.getItem('token');
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/request-appointment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -513,14 +520,14 @@ function ParentDashboard() {
                 throw new Error(`Erro ao solicitar agendamento: ${errorData.error || response.statusText}`);
             }
 
-            alert('Solicitação de agendamento enviada com sucesso! Aguarde a confirmação do profissional.');
-            // Limpar formulário e recarregar consultas pendentes
+            setSuccessMessage('Solicitação de agendamento enviada com sucesso! Aguarde a confirmação do profissional.');
             setSelectedProfessional('');
             setSelectedDate('');
             setSelectedTime('');
             setAppointmentNotes('');
+
             // Recarregar a lista de consultas pendentes
-            const updatedResponse = await fetch(`/api/parent/patient/${patientIdForAppointments}/appointments`, {
+            const updatedResponse = await fetch(`${API_URL}/api/parent/patient/${patientIdForAppointments}/appointments`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (updatedResponse.ok) {
@@ -531,7 +538,6 @@ function ParentDashboard() {
         } catch (err) {
             console.error("Erro ao solicitar agendamento:", err);
             setError("Erro ao solicitar agendamento: " + err.message);
-            alert("Erro ao solicitar agendamento: " + err.message);
         }
     };
 

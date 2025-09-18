@@ -1,5 +1,3 @@
-// ProfessionalDashboard.jsx
-
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card, Button, Table, Form, Nav, Tab, Badge, Modal, Alert, Spinner } from 'react-bootstrap';
 import { Calendar2Check, People, ClockHistory, ChatDots, FileEarmarkText, GraphUp, Bell, BoxArrowUpRight, Wallet2, PlusCircle } from 'react-bootstrap-icons';
@@ -168,11 +166,13 @@ const ProfessionalDashboard = () => {
         'Content-Type': 'application/json'
     });
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     const fetchAssistants = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`http://localhost:5000/api/professional/${user.id}/assistants`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token' )}` },
+            const res = await fetch(`${API_URL}/api/professional/${user.id}/assistants`, {
+                headers: getAuthHeaders(),
             });
             if (!res.ok) {
                 const errData = await res.json();
@@ -182,7 +182,7 @@ const ProfessionalDashboard = () => {
             setAssistants(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Erro ao buscar colaboradores:', err);
-            setError('Não foi possível carregar os colaboradores. ' + err.message);
+            setError('Não foi possível carregar os colaboradores: ' + err.message);
             setAssistants([]);
         }
     };

@@ -642,26 +642,24 @@ const PatientDetails = () => {
         return summary;
     };
 
-
-
-
-
-useEffect(() => {
-    const fetchPatientData = async () => {
-        if (!user || !patientId) {
-            navigate('/login');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError('Token de autenticação não encontrado.');
+    useEffect(() => {
+        const fetchPatientData = async () => {
+            if (!user || !patientId) {
                 navigate('/login');
                 return;
             }
+
+            setLoading(true);
+            setError('');
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Token de autenticação não encontrado.');
+                    navigate('/login');
+                    return;
+                }
+
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
             // Busca de todos os dados em paralelo para mais performance
             const [

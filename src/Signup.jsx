@@ -179,12 +179,13 @@ function Signup() {
         }
     };
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
 
-        // Validar força da senha
         if (passwordStrength.value < 30) {
             setError('Por favor, escolha uma senha mais forte.');
             return;
@@ -196,13 +197,13 @@ function Signup() {
                 tipo_usuario: tipoUsuario,
                 email: formData.email,
                 password: formData.password,
-                ...formData
+                ...formData,
             };
-            const response = await axios.post("http://localhost:5000/signup", payload);
+            const response = await axios.post(`${API_BASE_URL}/signup`, payload);
             setSuccess(response.data.message || 'Cadastro realizado com sucesso!');
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
-            console.error('Erro ao cadastrar:', err);
+            logError('Erro ao cadastrar:', err);
             setError(err.response?.data?.message || 'Erro ao cadastrar. Tente novamente.');
         } finally {
             setIsLoading(false);

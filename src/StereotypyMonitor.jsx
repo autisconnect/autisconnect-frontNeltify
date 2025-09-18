@@ -1,5 +1,3 @@
-// Ficheiro: src/StereotypyMonitor.jsx (VERSÃO FINAL E CORRIGIDA)
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Alert, Spinner, Table, Badge } from 'react-bootstrap';
@@ -149,24 +147,29 @@ const StereotypyMonitor = () => {
         saveDetectionToDB(newLog);
     };
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
     const saveDetectionToDB = async (detectionData) => {
         const token = localStorage.getItem('token');
-        if (!token || !patientId) return;
+        if (!token || !patientId) {
+            setError('Usuário não autenticado ou ID do paciente inválido.');
+            navigate('/login');
+            return;
+        }
         try {
-            await axios.post('http://localhost:5000/api/stereotypies', {
-                patient_id: patientId,
-                ...detectionData
-            }, { headers: { 'Authorization': `Bearer ${token}` } } );
+            await axios.post(
+                `${API_BASE_URL}/stereotypies`,
+                { patient_id: patientId, ...detectionData },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
         } catch (err) {
-            console.error("Erro ao salvar detecção:", err);
-            setError("Falha ao salvar detecção no servidor.");
+            logError('Erro ao salvar detecção:', err);
+            setError(err.response?.data?.message || 'Falha ao salvar detecção no servidor.');
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                navigate('/login');
+            }
         }
     };
-
-    const keypointsToObject = (keypoints) => keypoints.reduce((acc, kp) => {
-        if (kp.name) acc[kp.name] = { x: kp.x, y: kp.y, score: kp.score };
-        return acc;
-    }, {});
 
     const drawKeypoints = (keypoints, ctx) => {
         keypoints.forEach(keypoint => {

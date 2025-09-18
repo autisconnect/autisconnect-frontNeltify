@@ -141,25 +141,35 @@ const TriggerRecorder = () => {
         await saveVocalizationToDB(analysis);
     };
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
     const saveVocalizationToDB = async (analysisData) => {
         if (!patientId) return;
         const token = localStorage.getItem('token');
         if (!token) {
-            setError("Token não encontrado. Não foi possível salvar a análise.");
+            setError('Usuário não autenticado. Faça login novamente.');
+            navigate('/login');
             return;
         }
 
         try {
-            const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            await axios.post('http://localhost:5000/api/vocalizations', {
-                patient_id: patientId,
-                analysis_data: analysisData,
-                date: new Date( ).toISOString()
-            }, config);
-            console.log("Análise de vocalização salva com sucesso.");
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            await axios.post(
+                `${API_BASE_URL}/vocalizations`,
+                {
+                    patient_id: patientId,
+                    analysis_data: analysisData,
+                    date: new Date().toISOString(),
+                },
+                config
+            );
+            logInfo('Análise de vocalização salva com sucesso.');
         } catch (err) {
-            console.error("Erro ao salvar análise de vocalização:", err);
-            setError("Falha ao comunicar com o servidor para salvar a análise.");
+            logError('Erro ao salvar análise de vocalização:', err);
+            setError(err.response?.data?.message || 'Falha ao comunicar com o servidor para salvar a análise.');
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                navigate('/login');
+            }
         }
     };
 

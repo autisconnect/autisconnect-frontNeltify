@@ -47,9 +47,10 @@ const FinancialDashboard = () => {
                     throw new Error('Token de autenticação não encontrado.');
                 }
 
-                const response = await fetch(`http://localhost:5000/api/financials/professional/${professionalId}`, {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const response = await fetch(`${API_URL}/api/financials/professional/${professionalId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
-                } );
+                });
 
                 if (!response.ok) {
                     const errData = await response.json().catch(() => ({}));

@@ -104,43 +104,39 @@ const EmotionDetector = () => {
         }
     };
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
     // Função para salvar a emoção no banco de dados
     const saveEmotionToDB = async (dominantEmotion) => {
         if (!patientId) {
-            console.warn("Não é possível salvar a emoção: ID do paciente não definido.");
+            logError('Não é possível salvar a emoção: ID do paciente não definido.');
             return;
         }
 
-        // 1. Pega o token do localStorage
         const token = localStorage.getItem('token');
-
         if (!token) {
-            setError("Token de autenticação não encontrado. Faça o login novamente.");
+            setError('Usuário não autenticado. Faça login novamente.');
+            navigate('/login');
             return;
         }
 
         try {
-            // 2. Configura os cabeçalhos da requisição
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Envia o token
-                }
-            };
-
-            // 3. Envia a requisição com os dados E os cabeçalhos
-            await axios.post('http://localhost:5000/api/emotions', {
-                user_id: patientId,
-                emotion_type: dominantEmotion,
-                timestamp: new Date( ).toISOString()
-            }, config); // Passa a configuração para o axios
-
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            await axios.post(
+                `${API_BASE_URL}/emotions`,
+                {
+                    patient_id: patientId, // Alterado de user_id para patient_id
+                    emotion_type: dominantEmotion,
+                    timestamp: new Date().toISOString(),
+                },
+                config
+            );
+            logInfo('Emoção salva com sucesso.');
         } catch (err) {
-            console.error('Erro ao salvar emoção no banco de dados:', err);
-            if (err.response && err.response.status === 401) {
-                setError('Sua sessão expirou. Por favor, faça o login novamente.');
-            } else {
-                setError('Erro ao salvar emoção no servidor.');
+            logError('Erro ao salvar emoção no banco de dados:', err);
+            setError(err.code === 'ECONNABORTED' ? 'Timeout ao salvar emoção. Tente novamente.' : err.response?.data?.message || 'Erro ao salvar emoção no servidor.');
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                navigate('/login');
             }
         }
     };
