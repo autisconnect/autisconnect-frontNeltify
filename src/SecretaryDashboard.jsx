@@ -11,11 +11,14 @@ import './App.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
-const socket = io('http://localhost:5000', {
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const socket = io(API_URL, {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
-} );
+});
+
 
 const DashboardCard = ({ title, children, isLoading }) => (
   <Card className="h-100 shadow-sm">
@@ -60,8 +63,6 @@ const SecretaryDashboard = () => {
     Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json',
   });
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
   const fetchWithToken = useCallback(async (url, setData, errorMsg) => {
       try {
           const token = localStorage.getItem('token');
@@ -84,10 +85,10 @@ const SecretaryDashboard = () => {
     setLoadingData(true);
     setError('');
     await Promise.all([
-      fetchWithToken(`http://localhost:5000/api/secretary/patients`, setPatients, 'Erro ao buscar pacientes'  ),
-      fetchWithToken(`http://localhost:5000/api/secretary/professionals`, (data  ) => setProfessional(data[0] || null), 'Erro ao buscar profissional'),
-      fetchWithToken(`http://localhost:5000/api/secretary/appointments`, setAppointments, 'Erro ao buscar consultas'  ),
-      fetchWithToken(`http://localhost:5000/api/secretary/messages`, setMessages, 'Erro ao buscar mensagens'  ),
+      fetchWithToken(`${API_URL}/api/secretary/patients`, setPatients, 'Erro ao buscar pacientes'  ),
+      fetchWithToken(`${API_URL}/api/secretary/professionals`, (data  ) => setProfessional(data[0] || null), 'Erro ao buscar profissional'),
+      fetchWithToken(`${API_URL}/api/secretary/appointments`, setAppointments, 'Erro ao buscar consultas'  ),
+      fetchWithToken(`${API_URL}/api/secretary/messages`, setMessages, 'Erro ao buscar mensagens'  ),
     ]);
     setLoadingData(false);
   }, [fetchWithToken]);
@@ -108,7 +109,7 @@ const SecretaryDashboard = () => {
   const handleFieldUpdate = async (appointmentId, field, value) => {
     setAppointments((prev) => prev.map((c) => (c.id === appointmentId ? { ...c, [field]: value } : c)));
     try {
-      const response = await fetch(`http://localhost:5000/api/secretary/appointments/${appointmentId}`, {
+      const response = await fetch(`${API_URL}/api/secretary/appointments/${appointmentId}`, {
         method: 'PUT', headers: getAuthHeaders(  ), body: JSON.stringify({ field, value }),
       });
       if (!response.ok) throw new Error((await response.json()).error || 'Falha ao atualizar.');
@@ -127,7 +128,7 @@ const SecretaryDashboard = () => {
       setError('Paciente, data, hora e valor são obrigatórios.'); return;
     }
     try {
-      const response = await fetch(`http://localhost:5000/api/secretary/appointments`, {
+      const response = await fetch(`${API_URL}/api/secretary/appointments`, {
         method: 'POST', headers: getAuthHeaders(  ), body: JSON.stringify({ ...newAppointment, professional_id: professional.id }),
       });
       if (!response.ok) throw new Error((await response.json()).error || 'Falha ao registrar consulta.');
@@ -150,7 +151,7 @@ const SecretaryDashboard = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:5000/api/secretary/messages`, {
+      const response = await fetch(`${API_URL}/api/secretary/messages`, {
         method: 'POST',
         headers: getAuthHeaders(  ),
         body: JSON.stringify(newMessage),
@@ -162,7 +163,7 @@ const SecretaryDashboard = () => {
       setNewMessage({ recipientId: '', content: '' });
       setShowCommunicationModal(false);
       setSuccessMessage('Mensagem enviada com sucesso!');
-      await fetchWithToken(`http://localhost:5000/api/secretary/messages`, setMessages, 'Erro ao buscar mensagens'  );
+      await fetchWithToken(`${API_URL}/api/secretary/messages`, setMessages, 'Erro ao buscar mensagens'  );
       socket.emit('newMessage', { ...newMessage, senderId: user.id });
       setTimeout(() => setSuccessMessage(''), 2000);
     } catch (err) {

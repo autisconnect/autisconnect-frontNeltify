@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card, Button, Carousel, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Award, People, Heart, Calendar, ChatDots, CheckCircle } from 'react-bootstrap-icons';
+import { AuthContext } from './context/AuthContext';
+import { ArrowRight, Star, Award, People, Heart, Calendar, ChatDots, CheckCircle, PersonVideo, Mic, Sliders } from 'react-bootstrap-icons';
 import logohori from './assets/logo.png';
 import pais from './assets/pais.png';
 import medicos from './assets/medicos.png';
@@ -9,6 +10,7 @@ import servicos from './assets/servicos.png';
 import './App.css';
 
 const Home = () => {
+    const { user, loading } = useContext(AuthContext);
     const [showWelcome, setShowWelcome] = useState(false);
     const [isVisible, setIsVisible] = useState({});
 
@@ -57,50 +59,50 @@ const Home = () => {
     const [features] = useState([
         {
             id: 1,
-            title: "Monitoramento de Emoções",
-            description: "Tecnologia avançada de inteligência artificial para detectar e analisar expressões faciais em tempo real, ajudando a compreender melhor as emoções não verbalizadas e facilitando a comunicação.",
+            title: "Monitoramento Emocional por IA",
+            description: "Tecnologia de ponta que analisa expressões faciais em tempo real para ajudar a compreender emoções não verbalizadas, fornecendo insights valiosos para terapeutas e pais.",
             icon: <Heart className="feature-icon" size={40} />,
             link: "/presentation-dashboard/PresentationEmotionDetector",
             color: "#e74c3c"
         },
         {
             id: 2,
-            title: "Avaliação de Risco de AVC",
-            description: "Ferramenta inovadora que utiliza análise de assimetrias faciais para identificar possíveis sinais de alerta precoces para AVC, proporcionando intervenção rápida e eficaz.",
+            title: "Análise de Risco de AVC",
+            description: "Ferramenta inovadora que utiliza análise de assimetria facial para identificar sinais de alerta precoces, permitindo uma intervenção mais rápida e segura.",
             icon: <Star className="feature-icon" size={40} />,
             link: "/presentation-dashboard/PresentationStrokeRiskMonitor",
             color: "#f39c12"
         },
         {
             id: 3,
-            title: "Agendamento Integrado",
-            description: "Sistema completo de agendamento que conecta famílias, profissionais e serviços com lembretes automáticos, confirmações e sincronização de calendários para maior organização.",
-            icon: <Calendar className="feature-icon" size={40} />,
-            link: "/presentation-dashboard/PresentationIntegratedScheduling",
+            title: "Dashboard Completo para Profissionais",
+            description: "Gerencie pacientes, adicione colaboradores, visualize relatórios financeiros e de diagnósticos, e acompanhe o progresso de forma centralizada e eficiente.",
+            icon: <Sliders className="feature-icon" size={40} />,
+            link: "/PresentationProfessionalDashboard",
             color: "#3498db"
         },
         {
             id: 4,
-            title: "Comunidade de Apoio",
-            description: "Fóruns especializados e grupos de discussão moderados para compartilhar experiências, obter suporte emocional e trocar conhecimentos entre famílias e profissionais.",
-            icon: <People className="feature-icon" size={40} />,
-            link: "/presentation-dashboard/PresentationCommunitySupport",
+            title: "Analisador de Vocalizações",
+            description: "Grave e transcreva vocalizações para analisar padrões de fala, diversidade lexical e identificar repetições (ecolalia), auxiliando fonoaudiólogos e terapeutas.",
+            icon: <Mic className="feature-icon" size={40} />,
+            link: "/presentation-dashboard/PresentationTriggerRecorder",
             color: "#9b59b6"
         },
         {
             id: 5,
-            title: "Consultas Virtuais",
-            description: "Plataforma segura e criptografada para consultas por videochamada, reduzindo deslocamentos e tornando o acompanhamento mais frequente e acessível para todas as famílias.",
-            icon: <ChatDots className="feature-icon" size={40} />,
-            link: "/presentation-dashboard/PresentationVirtualConsultations",
+            title: "Detector de Estereotipias",
+            description: "Utilize a webcam para monitorar e registrar a frequência e duração de comportamentos repetitivos, como balançar o corpo ou movimentos de mãos.",
+            icon: <PersonVideo className="feature-icon" size={40} />,
+            link: "/presentation-dashboard/PresentationStereotypyMonitor",
             color: "#1abc9c"
         },
         {
             id: 6,
-            title: "Certificação de Serviços",
-            description: "Programa abrangente de certificação e treinamento para estabelecimentos que desejam oferecer um ambiente adequado e acolhedor para pessoas autistas e suas famílias.",
-            icon: <Award className="feature-icon" size={40} />,
-            link: "/presentation-dashboard/PresentationServiceCertification",
+            title: "Gestão para Secretárias",
+            description: "Uma plataforma dedicada para secretárias e administradores de clínicas gerenciarem agendamentos, pacientes e a comunicação para múltiplos profissionais.",
+            icon: <Calendar className="feature-icon" size={40} />,
+            link: "/presentation-dashboard/PresentationSecretaryDashboard",
             color: "#e67e22"
         }
     ]);
@@ -126,7 +128,6 @@ const Home = () => {
         }
     ]);
 
-    // Animação de contadores
     useEffect(() => {
         const timer = setTimeout(() => setShowWelcome(true), 1000);
 
@@ -139,14 +140,12 @@ const Home = () => {
             }));
         }, 50);
 
-        // Cleanup
         return () => {
             clearTimeout(timer);
             clearInterval(statsInterval);
         };
     }, []);
 
-    // Intersection Observer para animações
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -168,9 +167,12 @@ const Home = () => {
         return () => observer.disconnect();
     }, []);
 
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
+
     return (
         <div className="home-page">
-            {/* Hero Section */}
             <section className="hero-section" id="section-hero">
                 <Container>
                     <Row className="align-items-center min-vh-100">
@@ -182,9 +184,8 @@ const Home = () => {
                                 <p className="lead mb-4">
                                     A plataforma mais completa para conectar famílias de pessoas autistas a profissionais especializados e serviços inclusivos, promovendo suporte, inclusão e desenvolvimento em um ambiente seguro e acolhedor.
                                 </p>
-
                                 <div className="d-flex flex-wrap gap-3 mt-4">
-                                    <Link to="/signup" className="text-decoration-none">
+                                    <Link to="/Signup" className="text-decoration-none">
                                         <Button variant="light" size="lg" className="px-4 py-3">
                                             <CheckCircle className="me-2" size={20} />
                                             Cadastre-se
@@ -197,8 +198,6 @@ const Home = () => {
                                         </Button>
                                     </Link>
                                 </div>
-
-                                {/* Benefícios rápidos */}
                                 <Row className="mt-5">
                                     {benefits.map(benefit => (
                                         <Col md={4} key={benefit.id} className="mb-3">
@@ -228,8 +227,6 @@ const Home = () => {
                     </Row>
                 </Container>
             </section>
-
-            {/* Seção de Estatísticas */}
             <section className="stats-section py-5" id="section-stats">
                 <Container>
                     <div className="text-center mb-5">
@@ -268,8 +265,6 @@ const Home = () => {
                     </Row>
                 </Container>
             </section>
-
-            {/* Seção de Recursos */}
             <section className="features-section py-5" id="section-features">
                 <Container>
                     <div className="text-center mb-5">
@@ -279,8 +274,7 @@ const Home = () => {
                     <Row className="g-4">
                         {features.map((feature, index) => (
                             <Col lg={4} md={6} className="mb-4" key={feature.id}>
-                                <Card className={`feature-card h-100 ${isVisible['section-features'] ? 'animate__animated animate__fadeInUp' : ''}`} 
-                                      style={{ animationDelay: `${index * 0.1}s` }}>
+                                <Card className="feature-card h-100">
                                     <Card.Body className="text-center">
                                         <div className="feature-icon-wrapper mb-3" style={{ background: `linear-gradient(135deg, ${feature.color}15 0%, ${feature.color}25 100%)` }}>
                                             <div style={{ color: feature.color }}>
@@ -301,8 +295,6 @@ const Home = () => {
                     </Row>
                 </Container>
             </section>
-
-            {/* Seção de Serviços */}
             <section className="services-section py-5" id="section-services">
                 <Container>
                     <div className="text-center mb-5">
@@ -312,24 +304,19 @@ const Home = () => {
                     <Row className="g-4 align-items-stretch">
                         <Col lg={4} md={6} className="mb-4">
                             <Card className="service-card h-100">
-                                <div className="position-relative overflow-hidden">
-                                    <Card.Img variant="top" src={pais} alt="Plataforma para Pais e Responsáveis" />
-                                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 hover-overlay">
-                                        <Button variant="light" size="lg">Ver Demonstração</Button>
-                                    </div>
-                                </div>
+                                <Card.Img variant="top" src={pais} alt="Plataforma para Pais e Responsáveis" />
                                 <Card.Body className="d-flex flex-column">
                                     <div className="d-flex align-items-center mb-3">
                                         <Heart className="text-primary me-2" size={24} />
                                         <Card.Title className="h4 mb-0">Pais e Responsáveis</Card.Title>
                                     </div>
                                     <Card.Text className="flex-grow-1">
-                                        Monitore o progresso da sua criança, agende consultas com facilidade, acesse recursos educativos especializados e conecte-se com médicos e outros pais através de chat seguro ou videochamadas.
+                                        Acesse as ferramentas de monitoramento, agende consultas, visualize o progresso detalhado do seu filho e comunique-se de forma segura com a equipe de profissionais.
                                     </Card.Text>
                                     <div className="mt-auto">
-                                        <Link to="/PresentationParentDashboard" className="text-decoration-none">
+                                        <Link to="/login" className="text-decoration-none">
                                             <Button variant="primary" className="w-100">
-                                                Conhecer Plataforma <ArrowRight className="ms-2" size={16} />
+                                                Acessar Portal <ArrowRight className="ms-2" size={16} />
                                             </Button>
                                         </Link>
                                     </div>
@@ -338,24 +325,19 @@ const Home = () => {
                         </Col>
                         <Col lg={4} md={6} className="mb-4">
                             <Card className="service-card h-100">
-                                <div className="position-relative overflow-hidden">
-                                    <Card.Img variant="top" src={medicos} alt="Plataforma para Médicos e Terapeutas" />
-                                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 hover-overlay">
-                                        <Button variant="light" size="lg">Ver Demonstração</Button>
-                                    </div>
-                                </div>
+                                <Card.Img variant="top" src={medicos} alt="Plataforma para Médicos e Terapeutas" />
                                 <Card.Body className="d-flex flex-column">
                                     <div className="d-flex align-items-center mb-3">
                                         <Star className="text-warning me-2" size={24} />
                                         <Card.Title className="h4 mb-0">Médicos e Terapeutas</Card.Title>
                                     </div>
                                     <Card.Text className="flex-grow-1">
-                                        Acompanhe pacientes remotamente, prescreva terapias personalizadas, analise relatórios detalhados de longo prazo e participe de fóruns profissionais para discussão de casos clínicos.
+                                        Utilize um dashboard completo para gerenciar pacientes, adicionar colaboradores, editar informações, analisar relatórios e acessar as ferramentas de monitoramento por IA.
                                     </Card.Text>
                                     <div className="mt-auto">
-                                        <Link to="/PresentationProfessionalDashboard" className="text-decoration-none">
+                                        <Link to="/login" className="text-decoration-none">
                                             <Button variant="primary" className="w-100">
-                                                Conhecer Plataforma <ArrowRight className="ms-2" size={16} />
+                                                Acessar Portal <ArrowRight className="ms-2" size={16} />
                                             </Button>
                                         </Link>
                                     </div>
@@ -364,24 +346,19 @@ const Home = () => {
                         </Col>
                         <Col lg={4} md={6} className="mb-4">
                             <Card className="service-card h-100">
-                                <div className="position-relative overflow-hidden">
-                                    <Card.Img variant="top" src={servicos} alt="Plataforma para Serviços Locais" />
-                                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 hover-overlay">
-                                        <Button variant="light" size="lg">Ver Demonstração</Button>
-                                    </div>
-                                </div>
+                                <Card.Img variant="top" src={servicos} alt="Plataforma para Secretárias e Clínicas" />
                                 <Card.Body className="d-flex flex-column">
                                     <div className="d-flex align-items-center mb-3">
                                         <Award className="text-success me-2" size={24} />
-                                        <Card.Title className="h4 mb-0">Serviços Locais</Card.Title>
+                                        <Card.Title className="h4 mb-0">Secretárias e Clínicas</Card.Title>
                                     </div>
                                     <Card.Text className="flex-grow-1">
-                                        Agende horários adaptados, receba treinamento especializado para atender crianças autistas, integre roteiros com mapas interativos e obtenha feedback valioso dos pais.
+                                        Uma plataforma dedicada para a equipe administrativa gerenciar a agenda completa do profissional, cadastrar e editar pacientes, e facilitar a comunicação da clínica.
                                     </Card.Text>
                                     <div className="mt-auto">
-                                        <Link to="/presentation" className="text-decoration-none">
+                                        <Link to="/login" className="text-decoration-none">
                                             <Button variant="primary" className="w-100">
-                                                Conhecer Plataforma <ArrowRight className="ms-2" size={16} />
+                                                Acessar Portal <ArrowRight className="ms-2" size={16} />
                                             </Button>
                                         </Link>
                                     </div>
@@ -391,8 +368,6 @@ const Home = () => {
                     </Row>
                 </Container>
             </section>
-
-            {/* Seção de Depoimentos */}
             <section className="testimonials-section py-5" id="section-testimonials">
                 <Container>
                     <div className="text-center mb-5">
@@ -432,8 +407,6 @@ const Home = () => {
                     </Carousel>
                 </Container>
             </section>
-
-            {/* Call to Action */}
             <section className="cta-section py-5" id="section-cta">
                 <Container className="text-center">
                     <Row className="justify-content-center">
@@ -467,4 +440,3 @@ const Home = () => {
 };
 
 export default Home;
-
